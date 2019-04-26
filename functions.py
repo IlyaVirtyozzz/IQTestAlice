@@ -8,28 +8,25 @@ def calculate_answer(user_id, sessionStorage, info_i):
     elif 14 <= int(sessionStorage[user_id]['user_age']) <= 30:
         estimated_iq = info_i["raven_diagnostics"]["table"]['14-30'][sessionStorage[user_id]['answers'].count(1)]
     else:
-        if 30 <= int(sessionStorage[user_id]['user_age']) <= 35:
-            estimated_iq = (int(info_i["raven_diagnostics"]["table"]['14-30'][
-                                    sessionStorage[user_id]['answers'].count(1)]) / 97) * 100
-        elif 36 <= int(sessionStorage[user_id]['user_age']) <= 40:
-            estimated_iq = (int(info_i["raven_diagnostics"]["table"]['14-30'][
-                                    sessionStorage[user_id]['answers'].count(1)]) / 93) * 100
+        a = info_i["raven_diagnostics"]["table"]['14-30'][sessionStorage[user_id]['answers'].count(1)]
+        if a != '-':
+            if 30 <= int(sessionStorage[user_id]['user_age']) <= 35:
+                estimated_iq = (int(a) / 97) * 100
+            elif 36 <= int(sessionStorage[user_id]['user_age']) <= 40:
+                estimated_iq = (int(a) / 93) * 100
 
-        elif 41 <= int(sessionStorage[user_id]['user_age']) <= 50:
-            estimated_iq = (int(info_i["raven_diagnostics"]["table"]['14-30'][
-                                    sessionStorage[user_id]['answers'].count(1)]) / 88) * 100
+            elif 41 <= int(sessionStorage[user_id]['user_age']) <= 50:
+                estimated_iq = (int(a) / 88) * 100
+            elif 51 <= int(sessionStorage[user_id]['user_age']) <= 55:
+                estimated_iq = (int(a) / 82) * 100
 
-        elif 51 <= int(sessionStorage[user_id]['user_age']) <= 55:
-            estimated_iq = (int(info_i["raven_diagnostics"]["table"]['14-30'][
-                                    sessionStorage[user_id]['answers'].count(1)]) / 82) * 100
+            elif 51 <= int(sessionStorage[user_id]['user_age']) <= 55:
+                estimated_iq = (int(a) / 76) * 100
 
-        elif 51 <= int(sessionStorage[user_id]['user_age']) <= 55:
-            estimated_iq = (int(info_i["raven_diagnostics"]["table"]['14-30'][
-                                    sessionStorage[user_id]['answers'].count(1)]) / 76) * 100
-
+            else:
+                estimated_iq = (int(a) / 70) * 100
         else:
-            estimated_iq = (int(info_i["raven_diagnostics"]["table"]['14-30'][
-                                    sessionStorage[user_id]['answers'].count(1)]) / 70) * 100
+            estimated_iq = '-'
     if estimated_iq == '-':
         return (percent_iq, estimated_iq)
     else:
