@@ -45,6 +45,10 @@ def handle_dialog(res, req):
             sessionStorage[user_id]['steps'] = 1  # переходим в "Помощь"
             res['response']['text'] = 'Выберите что-хотите узнать'
             res['response']['buttons'].extend(info_i["buttons"]['infomenu'])
+        elif 'умеешь' in list(map(lambda x: x.lower(), req['request']['nlu']["tokens"])):
+
+            res['response']['text'] = 'Я могу определить коэффициент вашего интелекта.'
+            res['response']['buttons'].extend(info_i["buttons"]['mainmenu'])
         elif 'начать' in list(map(lambda x: x.lower(), req['request']['nlu']["tokens"])):
             sessionStorage[user_id]['steps'] = 2  # переходим в тестирование
             sessionStorage[user_id]['user_age'] = None  # здесь будет хранится возраст юзера
@@ -56,6 +60,7 @@ def handle_dialog(res, req):
             sessionStorage[user_id]['answers'] = list(
                 map(lambda x: 0, range(60)))  # создаём список с 0, 0-неправильный ответ, 1-правильный
             res['response']['text'] = 'Приняла. А сколько вам лет? Если не секрет.'
+
         elif 'выйти' in list(map(lambda x: x.lower(), req['request']['nlu']["tokens"])):
             res['end_session'] = True  # выходим
             res['response']['text'] = 'Пока-пока'
