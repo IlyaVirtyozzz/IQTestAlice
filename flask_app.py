@@ -34,21 +34,30 @@ def handle_dialog(res, req):
 
     if req['session']['new']:
         res['response']['text'] = \
-            'Привет! Здесь можно проверить свой IQ!'
+            'Привет! Здесь можно проверить свой IQ! Скажи "Помощь" или "Что ты умеешь?" чтобы узнать больше.'
         res['response']['buttons'].extend(info_i["buttons"]['mainmenu'])
         sessionStorage[user_id] = {
-            'steps': 0  # 0-главное меню, 1-помощь, 2-тест
+            'steps': 0  # 0-главное меню, 2-тест
         }
         return
     if sessionStorage[user_id]['steps'] == 0:
-        if 'помощь' in list(map(lambda x: x.lower(), req['request']['nlu']["tokens"])):
-            sessionStorage[user_id]['steps'] = 1  # переходим в "Помощь"
-            res['response']['text'] = 'Выберите что-хотите узнать'
-            res['response']['buttons'].extend(info_i["buttons"]['infomenu'])
-        elif 'умеешь' in list(map(lambda x: x.lower(), req['request']['nlu']["tokens"])):
+        res['response']['buttons'].extend(info_i["buttons"]['mainmenu'])
+    if 'помощь' in list(map(lambda x: x.lower(), req['request']['nlu']["tokens"])):
+        res['response'][
+            'text'] = 'Тест Рейвена включает в себя 60 впросов. Время на решение заданий ограничено 20 минутами.' \
+                      ' Расчитан для людей возрастом от 8 до 65 лет. Все результаты приблизительны.'
 
-            res['response']['text'] = 'Я могу определить коэффициент вашего интелекта.'
-            res['response']['buttons'].extend(info_i["buttons"]['mainmenu'])
+        return
+    if 'умеешь' in list(map(lambda x: x.lower(), req['request']['nlu']["tokens"])):
+        res['response']['text'] = 'Я могу определить коэффициент вашего интелекта.'
+
+        return
+
+    if sessionStorage[user_id]['steps'] == 0:
+        if 'википедии' in list(map(lambda x: x.lower(), req['request']['nlu']["tokens"])):
+            res['response']['text'] = "Открываю"  # открываем страницу на википедии
+
+            return
         elif 'начать' in list(map(lambda x: x.lower(), req['request']['nlu']["tokens"])):
             sessionStorage[user_id]['steps'] = 2  # переходим в тестирование
             sessionStorage[user_id]['user_age'] = None  # здесь будет хранится возраст юзера
@@ -60,8 +69,9 @@ def handle_dialog(res, req):
             sessionStorage[user_id]['answers'] = list(
                 map(lambda x: 0, range(60)))  # создаём список с 0, 0-неправильный ответ, 1-правильный
             res['response']['text'] = 'Приняла. А сколько вам лет? Если не секрет.'
-
+            res['response']['buttons'] = []
         elif 'выйти' in list(map(lambda x: x.lower(), req['request']['nlu']["tokens"])):
+
             res['end_session'] = True  # выходим
             res['response']['text'] = 'Пока-пока'
         else:
@@ -70,27 +80,8 @@ def handle_dialog(res, req):
             res['response']['buttons'].extend(info_i["buttons"]['mainmenu'])
         return
 
-    if sessionStorage[user_id]['steps'] == 1:
-        info_run(res, req)
     if sessionStorage[user_id]['steps'] == 2:
         test_start(res, req)
-
-
-def info_run(res, req):
-    user_id = req['session']['user_id']
-    res['response']['buttons'].extend(info_i["buttons"]['infomenu'])
-    if 'краткая' in list(map(lambda x: x.lower(), req['request']['nlu']["tokens"])):
-        res['response'][
-            'text'] = 'Тест Рейвена включает в себя 60 впросов. Время на решение заданий ограничено 20 минутами.' \
-                      ' Расчитан для людей возрастом от 8 до 65 лет. Все результаты приблизительны.'
-    elif 'назад' in list(map(lambda x: x.lower(), req['request']['nlu']["tokens"])):
-        sessionStorage[user_id]['steps'] = 0  # обратно в меню
-        res['response']['buttons'] = info_i["buttons"]['mainmenu']
-        res['response']['text'] = 'Привет! Здесь можно проверить свой IQ!'
-    elif 'википедии' in list(map(lambda x: x.lower(), req['request']['nlu']["tokens"])):
-        res['response']['text'] = "Открываю"  # открываем страницу на википедии
-    else:
-        res['response']['text'] = random.choice(info_i["dialogs"]["incomprehension"])  # ¯\_(ツ)_/¯
 
 
 def test_start(res, req):
@@ -131,16 +122,16 @@ def test_start(res, req):
                         check_true(attempt, num, user_id)
                     else:
                         if info_i["answers_info"][attempt][2] in 'AB':
-                            res['response']['buttons'].extend(info_i["buttons"]['AB'])
+                            res['response']['buttons'] = info_i["buttons"]['AB']
                         else:
-                            res['response']['buttons'].extend(info_i["buttons"]['CDE'])
+                            res['response']['buttons'] = info_i["buttons"]['CDE']
                         res['response']['text'] = random.choice(info_i["dialogs"]["incomprehension"])  # ¯\_(ツ)_/¯
                         return
                 else:
                     if info_i["answers_info"][attempt][2] in 'AB':
-                        res['response']['buttons'].extend(info_i["buttons"]['AB'])
+                        res['response']['buttons'] = info_i["buttons"]['AB']
                     else:
-                        res['response']['buttons'].extend(info_i["buttons"]['CDE'])
+                        res['response']['buttons'] = info_i["buttons"]['CDE']
                     res['response']['text'] = random.choice(info_i["dialogs"]["incomprehension"])  # ¯\_(ツ)_/¯
                     return
             if attempt < 60:
@@ -159,9 +150,9 @@ def test_start(res, req):
                 # в заданиях группы А и Б по 6 возможных вариантов ответов , в С,Д,Е по 8
                 if info_i["answers_info"][attempt][2] in 'AB':
 
-                    res['response']['buttons'].extend(info_i["buttons"]['AB'])
+                    res['response']['buttons'] = info_i["buttons"]['AB']
                 else:
-                    res['response']['buttons'].extend(info_i["buttons"]['CDE'])
+                    res['response']['buttons'] = info_i["buttons"]['CDE']
             else:
                 res['response']['text'] = ''
                 end_test(res, user_id)

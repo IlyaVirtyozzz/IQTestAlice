@@ -345,24 +345,13 @@
         "title": "Помощь",
         "hide": true
       },
-
-      {
-        "title": "Выйти",
-        "hide": true
-      }
-    ],
-    "infomenu": [
       {
         "title": "Информация на википедии",
         "url": "https://ru.wikipedia.org/wiki/Тест_Рейвена",
         "hide": true
       },
       {
-        "title": "Краткая информация",
-        "hide": true
-      },
-      {
-        "title": "Назад",
+        "title": "Выйти",
         "hide": true
       }
     ],
